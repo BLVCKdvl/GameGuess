@@ -58,21 +58,23 @@ namespace GameGuess
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //открыть файл
-            listBox1.Items.Clear();
-            StreamReader file = new StreamReader(path);
-            string[] questions = file.ReadToEnd().Split("\r\n");
-            for (int i = 0; i < questions.Length; i++)
-            {
-                if (!isFilled)
-                {
-                    questionsList.Add(questions[i]);
-                }
+            //1gr
+            MessageBox.Show("1st", "Успех операции", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
-                listBox1.Items.Add(questions[i]);
-            }
-            isFilled = true;
-            file.Close();
+        private void button4_Click(object sender, EventArgs e)
+        {
+            //2gr
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            //3gr
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            //4gr
         }
     }
 }
