@@ -16,7 +16,7 @@ namespace GameGuess
         public List<string> questionsList = new List<string>();
         public bool isFilled = false;
 
-        public string path = "Questions.txt";
+        public string path = "Group";
 
 
         public Settings()
@@ -59,22 +59,41 @@ namespace GameGuess
         private void button1_Click(object sender, EventArgs e)
         {
             //1gr
-            MessageBox.Show("1st", "Успех операции", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            OpenGroupFile(1);
+
+            //MessageBox.Show("1st", "Успех операции", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
             //2gr
+            OpenGroupFile(2);
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
             //3gr
+            OpenGroupFile(3);
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
             //4gr
+            OpenGroupFile(4);
+        }
+
+        private void OpenGroupFile(int number)
+        {
+            listBox1.Items.Clear();
+            string openPath = path + number.ToString() + ".txt";
+            StreamReader file = new StreamReader(openPath);
+            string[] questions = file.ReadToEnd().Split("\r\n");
+            foreach(var item in questions)
+            {
+                listBox1.Items.Add(item);
+            }
+
+            file.Close();
         }
     }
 }
