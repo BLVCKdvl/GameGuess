@@ -8,16 +8,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Configuration;
+using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace GameGuess
 {
     public partial class Settings : Form
     {
-        public List<string> questionsList = new List<string>();
-        public bool isFilled = false;
-
-        public string path = "Group";
-
+        private SqlConnection sqlConnection = null;
+        private int selectedGroup;
 
         public Settings()
         {
@@ -27,39 +27,62 @@ namespace GameGuess
         private void button3_Click(object sender, EventArgs e)
         {
             //удалить
-            
+
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            //добавить
-            if (textBox1.Text == "")
+            //add question to database
+            if (textBox1.Text.Length == 0 || textBox2.Text.Length == 0 || textBox3.Text.Length == 0 || textBox4.Text.Length == 0)
             {
-                MessageBox.Show("Текстовое поле пустое", "Введите вопрос", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
+                MessageBox.Show("Заполните все текстовые поля!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
-            questionsList.Add(textBox1.Text);
 
-            WriteListToFile();
+            if (!radioButton1.Checked || !radioButton2.Checked || !radioButton3.Checked)
+            {
+                MessageBox.Show("Отметьте верный вариант ответа!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+
+            string correct = GetCorrectAnswer();
+
+            SqlCommand commandAddQuestion = new SqlCommand(
+                "INSERT INTO Questions (text, ans1, ans2, ans3, correct, gr) VALUES (@text, @ans1, @ans2, @ans3, @correct, @gr)", 
+                sqlConnection);
+
+            commandAddQuestion.Parameters.AddWithValue("text", textBox1.Text);
+            commandAddQuestion.Parameters.AddWithValue("ans1", textBox2.Text);
+            commandAddQuestion.Parameters.AddWithValue("ans2", textBox3.Text);
+            commandAddQuestion.Parameters.AddWithValue("ans3", textBox4.Text);
+            commandAddQuestion.Parameters.AddWithValue("correct", correct);
+            commandAddQuestion.Parameters.AddWithValue("gr", selectedGroup);
+
+            commandAddQuestion.ExecuteNonQuery();
+        }
+
+        private string GetCorrectAnswer()
+        {
+            if (radioButton1.Checked)
+            {
+                return textBox2.Text;
+            }
+            else if (radioButton2.Checked)
+            {
+                return textBox3.Text;
+            }
+
+            return textBox4.Text;
         }
 
         private void WriteListToFile()
         {
-            StreamWriter file = new StreamWriter(path);
-            StringBuilder result = new StringBuilder();
-            foreach(var item in questionsList)
-            {
-                result.Append(item + "\r\n");
-            }
-            file.WriteLine(textBox1.Text);
-            MessageBox.Show("Вопрос добавлен", "Успех операции", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            file.Close();
+
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             //1gr
-            OpenGroupFile(1);
+            selectedGroup = 1;
+            OpenGroupFile();
 
             //MessageBox.Show("1st", "Успех операции", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
@@ -67,33 +90,37 @@ namespace GameGuess
         private void button4_Click(object sender, EventArgs e)
         {
             //2gr
-            OpenGroupFile(2);
+            selectedGroup = 2;
+            OpenGroupFile();
         }
 
         private void button5_Click(object sender, EventArgs e)
         {
             //3gr
-            OpenGroupFile(3);
+            selectedGroup = 3;
+            OpenGroupFile();
         }
 
         private void button6_Click(object sender, EventArgs e)
         {
             //4gr
-            OpenGroupFile(4);
+            selectedGroup = 4;
+            OpenGroupFile();
         }
 
-        private void OpenGroupFile(int number)
+        private void OpenGroupFile()
         {
-            listBox1.Items.Clear();
-            string openPath = path + number.ToString() + ".txt";
-            StreamReader file = new StreamReader(openPath);
-            string[] questions = file.ReadToEnd().Split("\r\n");
-            foreach(var item in questions)
-            {
-                listBox1.Items.Add(item);
-            }
 
-            file.Close();
+        }
+
+        private void Settings_Load(object sender, EventArgs e)
+        {
+            sqlConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["Questions"].ConnectionString);
+            sqlConnection.Open();
+            if (sqlConnection.State == ConnectionState.Open)
+            {
+                //MessageBox.Show("Connection Successful");
+            }
         }
     }
 }
