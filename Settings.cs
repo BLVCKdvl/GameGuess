@@ -17,7 +17,7 @@ namespace GameGuess
     public partial class Settings : Form
     {
         private SqlConnection sqlConnection = null;
-        private int selectedGroup;
+        private int selectedGroup = 0;
 
         public Settings()
         {
@@ -36,11 +36,18 @@ namespace GameGuess
             if (textBox1.Text.Length == 0 || textBox2.Text.Length == 0 || textBox3.Text.Length == 0 || textBox4.Text.Length == 0)
             {
                 MessageBox.Show("Заполните все текстовые поля!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
             }
 
-            if (!radioButton1.Checked || !radioButton2.Checked || !radioButton3.Checked)
+            if (!radioButton1.Checked && !radioButton2.Checked && !radioButton3.Checked)
             {
                 MessageBox.Show("Отметьте верный вариант ответа!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            if (selectedGroup == 0)
+            {
+                MessageBox.Show("Выберите группу вопросов для добавления слева", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
 
             string correct = GetCorrectAnswer();
@@ -57,6 +64,8 @@ namespace GameGuess
             commandAddQuestion.Parameters.AddWithValue("gr", selectedGroup);
 
             commandAddQuestion.ExecuteNonQuery();
+
+            MessageBox.Show("Вопрос успешно добавлен", "Отчет операции", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private string GetCorrectAnswer()
