@@ -82,11 +82,6 @@ namespace GameGuess
             return textBox4.Text;
         }
 
-        private void WriteListToFile()
-        {
-
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
             //1gr
@@ -119,6 +114,44 @@ namespace GameGuess
 
         private void OpenGroupFile()
         {
+            //SqlDataAdapter dataAdapter = new SqlDataAdapter(
+            //    $"SELECT text FROM Questions WHERE gr = {selectedGroup}", 
+            //    sqlConnection);
+
+            //DataSet dataSet = new DataSet();
+
+            //dataAdapter.Fill(dataSet);
+
+            //listBox1.Items.AddRange();
+
+            listBox1.Items.Clear();
+
+            SqlDataReader dataReader = null;
+
+            try
+            {
+                SqlCommand AddToListBoxCommand = new SqlCommand(
+                     $"SELECT text FROM Questions WHERE gr = {selectedGroup}",
+                     sqlConnection);
+
+                dataReader = AddToListBoxCommand.ExecuteReader();
+
+                while (dataReader.Read())
+                {
+                    listBox1.Items.Add(dataReader.GetString(0));
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                if (dataReader != null && !dataReader.IsClosed)
+                {
+                    dataReader.Close();
+                }
+            }
 
         }
 
