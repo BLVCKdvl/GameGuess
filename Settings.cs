@@ -26,8 +26,13 @@ namespace GameGuess
 
         private void button3_Click(object sender, EventArgs e)
         {
-            //удалить
+            SqlCommand commandDeleteQuestion = new SqlCommand(
+               $"DELETE FROM Questions WHERE text = N'{listBox1.SelectedItem?.ToString()}'",
+               sqlConnection);
 
+            commandDeleteQuestion.ExecuteNonQuery();
+
+            MessageBox.Show("Вопрос успешно удален", "Отчет операции", MessageBoxButtons.OK, MessageBoxIcon.Information );
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -87,8 +92,6 @@ namespace GameGuess
             //1gr
             selectedGroup = 1;
             OpenGroupFile();
-
-            //MessageBox.Show("1st", "Успех операции", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -114,16 +117,6 @@ namespace GameGuess
 
         private void OpenGroupFile()
         {
-            //SqlDataAdapter dataAdapter = new SqlDataAdapter(
-            //    $"SELECT text FROM Questions WHERE gr = {selectedGroup}", 
-            //    sqlConnection);
-
-            //DataSet dataSet = new DataSet();
-
-            //dataAdapter.Fill(dataSet);
-
-            //listBox1.Items.AddRange();
-
             listBox1.Items.Clear();
 
             SqlDataReader dataReader = null;
